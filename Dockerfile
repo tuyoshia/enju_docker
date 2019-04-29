@@ -37,16 +37,15 @@ RUN echo RAILS_SERVE_STATIC_FILES=true >> .env
 RUN echo REDIS_URL=redis://127.0.0.1/enju_leaf >> .env
 
 RUN /etc/init.d/postgresql start && \
-    rails g enju_leaf:setup
-RUN /etc/init.d/postgresql start && \
+    rails g enju_leaf:setup &&\
     RAILS_ENV=production rails g enju_leaf:quick_install
 # RUN bundle exec whenever --update-crontab
 
 RUN    echo solr: bundle exec rake sunspot:solr:run > Procfile \
     && echo resque: bundle exec rake environment resque:work QUEUE=enju_leaf,mailers TERM_CHILD=1 >> Procfile \
-    && echo web: bundle exec rails s -b 0.0.0.0 >> Procfile
+    && echo web: bundle exec rails s -b 0.0.0.0 -p 3000 >> Procfile
 
-RUN echo RAILS_ENV=production > .env
+RUN echo RAILS_ENV=production >> .env
 
 ADD enjustart.sh /my_enju/enjustart.sh
 RUN chmod ug+x /my_enju/enjustart.sh
